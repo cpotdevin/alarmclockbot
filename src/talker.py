@@ -33,7 +33,6 @@ class Talker:
 
     def say(self, text, id, type, delay=0):
         time.sleep(delay)
-        print('saying')
 
         output_file = path + '/../audio/' + id + '.mp3'
 
@@ -42,7 +41,7 @@ class Talker:
             if text.startswith('<speak>'):
                 ssml = text
             else:
-                ssml = f'<speak>{text}</speak>'
+                ssml = f'<speak>{text}<break time="300ms"></speak>'
 
             synthesis_input = texttospeech.types.SynthesisInput(ssml=ssml)
             response = self.client.synthesize_speech(synthesis_input, self.voice, self.audio_config)
