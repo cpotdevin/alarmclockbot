@@ -1,3 +1,5 @@
 config.toml
+audio/
 
 venv/
+__pycache__/
