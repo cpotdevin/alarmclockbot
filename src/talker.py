@@ -1,19 +1,25 @@
 from google.cloud import texttospeech
 import os
 import subprocess
+import time
+
+path = os.path.dirname(os.path.realpath(__file__))
 
 
 class Talker:
     def __init__(self,
+                audio_cmd,
                 language='en-US',
                 gender='NEUTRAL',
                 speaking_rate=0.85,
                 pitch=0):
+        self.audio_cmd = audio_cmd
+
         self.client = texttospeech.TextToSpeechClient()
 
-        if (gender == 'MALE'):
+        if gender == 'MALE':
             gender_enum = texttospeech.enums.SsmlVoiceGender.MALE
-        elif (gender == 'FEMALE'):
+        elif gender == 'FEMALE':
             gender_enum = texttospeech.enums.SsmlVoiceGender.FEMALE
         else:
             gender_enum = texttospeech.enums.SsmlVoiceGender.NEUTRAL
@@ -25,12 +31,15 @@ class Talker:
             pitch=pitch
         )
 
-    def say(self, text, id, type):
-        output_file = 'audio/' + id + '.mp3'
+    def say(self, text, id, type, delay=0):
+        time.sleep(delay)
+        print('saying')
 
-        if (type == 'VARIABLE' or not os.path.isfile(output_file)):
+        output_file = path + '/../audio/' + id + '.mp3'
+
+        if type == 'VARIABLE_TEXT' or not os.path.isfile(output_file):
             print('creating audio')
-            if (text.startswith('<speak>')):
+            if text.startswith('<speak>'):
                 ssml = text
             else:
                 ssml = f'<speak>{text}</speak>'
@@ -41,4 +50,4 @@ class Talker:
             with open(output_file, 'wb') as out:
                 out.write(response.audio_content)
 
-        subprocess.run(["afplay", output_file])
+        subprocess.run(self.audio_cmd.format(output_file), shell=True)
