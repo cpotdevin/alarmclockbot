@@ -1,5 +1,5 @@
-import toml
 import os
+import toml
 import hashlib
 from talker import Talker
 from player import Player
