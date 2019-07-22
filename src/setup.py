@@ -13,7 +13,7 @@ with open(path + '/../config.toml') as config_file:
         print('Please set the "schedule" value in the config file.')
         sys.exit()
 
-    command = f'python3  {path}/main.py'
+    command = f'python3 {path}/main.py'
 
     cron = CronTab(user=True)
 
