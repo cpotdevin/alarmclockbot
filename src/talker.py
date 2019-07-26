@@ -11,11 +11,13 @@ path = os.path.dirname(os.path.realpath(__file__))
 class Talker:
     def __init__(self,
                 audio_cmd,
-                language='en-US',
-                gender='NEUTRAL',
-                speaking_rate=0.85,
-                pitch=0):
+                weekdays,
+                lang,
+                gender,
+                speaking_rate,
+                pitch):
         self.audio_cmd = audio_cmd
+        self.weekdays = weekdays
 
         self.client = texttospeech.TextToSpeechClient()
 
@@ -26,7 +28,7 @@ class Talker:
         else:
             gender_enum = texttospeech.enums.SsmlVoiceGender.NEUTRAL
 
-        self.voice = texttospeech.types.VoiceSelectionParams(language_code=language, ssml_gender=gender_enum)
+        self.voice = texttospeech.types.VoiceSelectionParams(language_code=lang, ssml_gender=gender_enum)
         self.audio_config = texttospeech.types.AudioConfig(
             audio_encoding=texttospeech.enums.AudioEncoding.MP3,
             speaking_rate=speaking_rate,
@@ -44,7 +46,10 @@ class Talker:
 
             time = timestamp.strftime('%I:%M%p')
             timeSsml = f'<say-as interpret-as="time" format="hms12">{time}</say-as>'
-            return step['text'].format(dateSsml, timeSsml)
+
+            weekday = self.weekdays[timestamp.weekday()]
+
+            return step['text'].format(date=dateSsml, time=timeSsml, weekday=weekday)
         return ''
 
     def say(self, text, delay=0):

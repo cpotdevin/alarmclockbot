@@ -4,6 +4,16 @@ import validator
 from talker import Talker
 from player import Player
 
+DEFAULT_WEEKDAYS = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+]
+
 
 def runStep(step):
     delay = step.get('delay', 0)
@@ -18,15 +28,17 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 with open(path + '/../config.toml') as config_file:
     config = toml.loads(config_file.read())
+
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config['google_credentials']
 
     audio_cmd = config['audio_cmd']
 
-    language = config.get('language', 'en-US')
+    weekdays = config.get('weekdays', DEFAULT_WEEKDAYS);
+    lang = config.get('lang', 'en-US')
     gender = config.get('gender', 'NEUTRAL')
     speaking_rate = config.get('speaking_rate', 0.85)
     pitch = config.get('pitch', 0)
-    talker = Talker(audio_cmd, language, gender, speaking_rate, pitch)
+    talker = Talker(audio_cmd, weekdays, lang, gender, speaking_rate, pitch)
 
     player = Player(audio_cmd)
 
