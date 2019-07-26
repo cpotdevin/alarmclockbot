@@ -1,8 +1,9 @@
-from google.cloud import texttospeech
 import os
 import subprocess
 import time
 import hashlib
+from datetime import datetime
+from google.cloud import texttospeech
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -35,6 +36,15 @@ class Talker:
     def process(self, step):
         if step['type'] == 'SIMPLE_TEXT':
             return step['text']
+        elif step['type'] == 'TIMESTAMP_TEXT':
+            timestamp = datetime.now()
+
+            date = timestamp.date()
+            dateSsml = f'<say-as interpret-as="date" format="yyyymmdd" detail="1">{date}</say-as>'
+
+            time = timestamp.strftime('%I:%M%p')
+            timeSsml = f'<say-as interpret-as="time" format="hms12">{time}</say-as>'
+            return step['text'].format(dateSsml, timeSsml)
         return ''
 
     def say(self, text, delay=0):

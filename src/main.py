@@ -1,6 +1,5 @@
 import os
 import toml
-import hashlib
 import validator
 from talker import Talker
 from player import Player
