@@ -2,6 +2,7 @@ from google.cloud import texttospeech
 import os
 import subprocess
 import time
+import hashlib
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -31,13 +32,19 @@ class Talker:
             pitch=pitch
         )
 
-    def say(self, text, id, type, delay=0):
+    def process(self, step):
+        if step['type'] == 'SIMPLE_TEXT':
+            return step['text']
+        return ''
+
+    def say(self, text, delay=0):
         time.sleep(delay)
 
+        id = hashlib.sha1(text.encode()).hexdigest()
         output_file = path + '/../audio/' + id + '.mp3'
 
-        if type == 'VARIABLE_TEXT' or not os.path.isfile(output_file):
-            print('creating audio')
+        if not os.path.isfile(output_file):
+            print(f'creating audio file {output_file}')
             if text.startswith('<speak>'):
                 ssml = text
             else:

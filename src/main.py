@@ -1,8 +1,19 @@
 import os
 import toml
 import hashlib
+import validator
 from talker import Talker
 from player import Player
+
+
+def runStep(step):
+    delay = step.get('delay', 0)
+    if step['type'] == 'AUDIO_FILE':
+        player.play(step['file'], step['thread'], delay)
+    else:
+        text = talker.process(step)
+        talker.say(text, delay)
+
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -21,9 +32,7 @@ with open(path + '/../config.toml') as config_file:
     player = Player(audio_cmd)
 
     for step in config['steps']:
-        delay = step.get('delay', 0)
-        if step['type'] == 'AUDIO_FILE':
-            player.play(step['file'], step['thread'], delay)
-        else:
-            id = hashlib.sha1(step['text'].encode()).hexdigest()
-            talker.say(step['text'], id, step['type'], delay)
+        validator.validateStep(step)
+
+    for step in config['steps']:
+        runStep(step)
