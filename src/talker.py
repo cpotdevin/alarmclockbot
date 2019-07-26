@@ -35,22 +35,34 @@ class Talker:
             pitch=pitch
         )
 
+
     def process(self, step):
         if step['type'] == 'SIMPLE_TEXT':
             return step['text']
         elif step['type'] == 'TIMESTAMP_TEXT':
-            timestamp = datetime.now()
-
-            date = timestamp.date()
-            dateSsml = f'<say-as interpret-as="date" format="yyyymmdd" detail="1">{date}</say-as>'
-
-            time = timestamp.strftime('%I:%M%p')
-            timeSsml = f'<say-as interpret-as="time" format="hms12">{time}</say-as>'
-
-            weekday = self.weekdays[timestamp.weekday()]
-
-            return step['text'].format(date=dateSsml, time=timeSsml, weekday=weekday)
+            return self.procesTimestampStep(step)
         return ''
+
+
+    def procesTimestampStep(self, step):
+        timestamp = datetime.now()
+
+        date = timestamp.date()
+        dateSsml = f'<say-as interpret-as="date" format="yyyymmdd" detail="1">{date}</say-as>'
+
+        month = timestamp.month
+        monthSsml = f'<say-as interpret-as="date" format="m" detail="1">{month}</say-as>'
+
+        day = timestamp.day
+        daySsml = f'<say-as interpret-as="ordinal">{day}</say-as>'
+
+        time = timestamp.strftime('%I:%M%p')
+        timeSsml = f'<say-as interpret-as="time" format="hms12">{time}</say-as>'
+
+        weekday = self.weekdays[timestamp.weekday()]
+
+        return step['text'].format(date=dateSsml, month=monthSsml, day=daySsml, time=timeSsml, weekday=weekday)
+
 
     def say(self, text, delay=0):
         time.sleep(delay)
