@@ -3,3 +3,4 @@ audio/
 
 venv/
 __pycache__/
+.vscode/
