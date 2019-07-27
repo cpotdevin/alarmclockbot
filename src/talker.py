@@ -3,6 +3,7 @@ import subprocess
 import time
 import hashlib
 from datetime import datetime
+import requests
 from google.cloud import texttospeech
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -40,11 +41,13 @@ class Talker:
         if step['type'] == 'SIMPLE_TEXT':
             return step['text']
         elif step['type'] == 'TIMESTAMP_TEXT':
-            return self.procesTimestampStep(step)
+            return self.processTimestampStep(step)
+        elif step['type'] == 'API_TEXT':
+            return self.processAPIStep(step)
         return ''
 
 
-    def procesTimestampStep(self, step):
+    def processTimestampStep(self, step):
         timestamp = datetime.now()
 
         date = timestamp.date()
@@ -62,6 +65,23 @@ class Talker:
         weekday = self.weekdays[timestamp.weekday()]
 
         return step['text'].format(date=dateSsml, month=monthSsml, day=daySsml, time=timeSsml, weekday=weekday)
+
+    def processAPIStep(self, step):
+        response = requests.get(step['url'])
+
+        values = []
+        for i, path in enumerate(step['paths']):
+            values.append(response.json())
+
+            for key in path:
+                values[i] = values[i][key]
+
+            try:
+                values[i] = float(values[i].replace(',', ''))
+            except ValueError:
+                pass
+
+        return step['text'].format(*values)
 
 
     def say(self, text, delay=0):
