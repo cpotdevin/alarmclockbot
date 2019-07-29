@@ -67,13 +67,21 @@ class Talker:
         return step['text'].format(date=dateSsml, month=monthSsml, day=daySsml, time=timeSsml, weekday=weekday)
 
     def processAPIStep(self, step):
-        response = requests.get(step['url'])
+        parameters = None
+        if step.get('parameters') is not None:
+            parameters = step['parameters']
+        response = requests.get(step['url'], params=parameters)
 
         values = []
         for i, path in enumerate(step['paths']):
             values.append(response.json())
 
             for key in path:
+                if key[:1] == '$':
+                    try:
+                        key = int(key[1:])
+                    except ValueError:
+                        pass
                 values[i] = values[i][key]
 
             try:
