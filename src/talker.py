@@ -67,10 +67,15 @@ class Talker:
         return step['text'].format(date=dateSsml, month=monthSsml, day=daySsml, time=timeSsml, weekday=weekday)
 
     def processAPIStep(self, step):
-        parameters = None
-        if step.get('parameters') is not None:
+        headers = {}
+        if step.get('headers') is not None:
+            headers = step['headers']
+
+        parameters = {}
+        if step.get('params') is not None:
             parameters = step['parameters']
-        response = requests.get(step['url'], params=parameters)
+
+        response = requests.get(step['url'], headers=headers, params=parameters)
 
         values = []
         for i, path in enumerate(step['paths']):
@@ -85,7 +90,8 @@ class Talker:
                 values[i] = values[i][key]
 
             try:
-                values[i] = float(values[i].replace(',', ''))
+                if type(values[i]) is str:
+                    values[i] = float(values[i].replace(',', ''))
             except ValueError:
                 pass
 
