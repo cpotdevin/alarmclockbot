@@ -10,6 +10,11 @@ def validateStep(step):
         raise AttributeError('Steps must include a "type" attribute.')
     elif step.get('type') not in STEP_TYPES:
         raise AttributeError(f'Steps must use a valid step type: {STEP_TYPES}')
+    elif step.get('type').endswith('FILE'):
+        if step.get('file') is None:
+            raise AttributeError('FILE type steps must include a "file" attribute')
+        elif step.get('thread') is None:
+            raise AttributeError('FILE type steps must include a "thread" attribute')
     elif step.get('type').endswith('TEXT'):
         if step.get('text') is None:
             raise AttributeError('TEXT type steps must include a "text" attribute')
