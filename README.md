@@ -1,4 +1,3 @@
 # Alarm Clock Butler
 
-This is a simple alarm clock that can tell you stuff while waking you up.
- 
+Check out the project description, setup and usage at [alarmclockbot.com](https://alarmclockbot.com)!
